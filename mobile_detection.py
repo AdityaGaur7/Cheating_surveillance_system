@@ -2,8 +2,8 @@ import cv2
 import torch
 from ultralytics import YOLO
 
-# Load trained YOLO model
-model = YOLO(r"C:\Users\LENOVO\Documents\FYP\Cheating Surveillance\models\best.pt")  
+# Load YOLOv8n model - this will automatically download if not present
+model = YOLO("yolov8n.pt")  
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model.to(device)
 
@@ -15,8 +15,9 @@ def process_mobile_detection(frame):
         for box in result.boxes:
             conf = box.conf[0].item()
             cls = int(box.cls[0].item())
-
-            if conf < 0.8 or cls != 0:  # Mobile class index is 0
+            
+            # Update class index for mobile phones in COCO dataset (67 is cell phone)
+            if conf < 0.8 or cls != 67:  
                 continue
 
             x1, y1, x2, y2 = map(int, box.xyxy[0])  
